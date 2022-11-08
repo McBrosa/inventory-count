@@ -1,4 +1,4 @@
-package io.robrichardson.inventorycount;
+package com.mcbrosa.inventorycount;
 
 import javax.inject.Inject;
 
@@ -15,6 +15,8 @@ import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.ui.overlay.OverlayManager;
 import net.runelite.client.ui.overlay.infobox.InfoBoxManager;
 import net.runelite.client.util.ImageUtil;
+
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.Arrays;
 
@@ -85,6 +87,8 @@ public class InventoryCountPlugin extends Plugin
 				overlayManager.remove(overlay);
 				addInfoBox();
 			}
+		} else {
+			updateOverlays();
 		}
 	}
 
@@ -110,13 +114,16 @@ public class InventoryCountPlugin extends Plugin
 	private void updateOverlays()
 	{
 		String text = String.valueOf(openInventorySpaces());
+		Color color = hasAllItems(config.inventoryItemIdCheck(), config.inventoryItemCountCheck()) ? config.itemCheckPositiveColor() : config.itemCheckNegativeColor();
 		if(config.renderOnInventory())
 		{
 			overlay.setText(text);
+			overlay.setColor(color);
 		}
 		else
 		{
 			inventoryCountInfoBox.setText(text);
+			inventoryCountInfoBox.setColor(color);
 		}
 	}
 
@@ -126,6 +133,14 @@ public class InventoryCountPlugin extends Plugin
 		Item[] items = container == null ? new Item[0] : container.getItems();
 		int usedSpaces = (int) Arrays.stream(items).filter(p -> p.getId() != -1).count();
 		return INVENTORY_SIZE - usedSpaces;
+	}
+
+	private boolean hasAllItems(Integer itemId, Integer expectedCount)
+	{
+		ItemContainer container = client.getItemContainer(InventoryID.INVENTORY);
+		Item[] items = container == null ? new Item[0] : container.getItems();
+		int numberOfExpectedItems = (int) Arrays.stream(items).filter(p -> p.getId() != -1 && p.getId() == itemId).count();
+		return expectedCount == numberOfExpectedItems;
 	}
 
 	@Subscribe

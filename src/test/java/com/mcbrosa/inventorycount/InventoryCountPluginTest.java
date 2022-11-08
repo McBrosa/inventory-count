@@ -1,4 +1,4 @@
-package io.robrichardson.inventorycount;
+package com.mcbrosa.inventorycount;
 
 import net.runelite.client.RuneLite;
 import net.runelite.client.externalplugins.ExternalPluginManager;

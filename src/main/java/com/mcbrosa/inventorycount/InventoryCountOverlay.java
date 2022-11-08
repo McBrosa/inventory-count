@@ -1,4 +1,4 @@
-package io.robrichardson.inventorycount;
+package com.mcbrosa.inventorycount;
 
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
@@ -15,9 +15,6 @@ import net.runelite.client.ui.overlay.OverlayUtil;
 
 import javax.inject.Inject;
 import java.awt.*;
-import java.time.Duration;
-import java.time.Instant;
-import java.time.temporal.ChronoUnit;
 
 @Slf4j
 public class InventoryCountOverlay extends Overlay {
@@ -27,6 +24,7 @@ public class InventoryCountOverlay extends Overlay {
     private final ConfigManager configManager;
 
     private String _text;
+    private Color _color;
 
     @Inject
     public InventoryCountOverlay(Client client, InventoryCountPlugin plugin, InventoryCountConfig config, ConfigManager configManager) {
@@ -56,10 +54,11 @@ public class InventoryCountOverlay extends Overlay {
         String textToDraw = _text;
         FontType infoboxFontType = configManager.getConfiguration("runelite", "infoboxFontType", FontType.class);
         graphics.setFont(infoboxFontType.getFont()); // make sure we do this before calculating drawLocation
-
         Rectangle bounds = toDrawOn.getBounds();
         Point drawLocation = new Point((int) bounds.getCenterX() - (graphics.getFontMetrics().stringWidth(textToDraw) / 2), (int) bounds.getMaxY());
-        OverlayUtil.renderTextLocation(graphics, drawLocation, textToDraw, Color.WHITE);
+        OverlayUtil.renderTextLocation(graphics, drawLocation, textToDraw, _color);
+
+//        OverlayUtil.renderPolygon(graphics, bounds, _color, _color, new BasicStroke(0));
 
         return null;
     }
@@ -67,5 +66,9 @@ public class InventoryCountOverlay extends Overlay {
     public void setText(String text)
     {
         _text = text;
+    }
+
+    public void setColor(Color color) {
+        _color = color;
     }
 }
